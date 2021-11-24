@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{b8df4f28-127a-4ac6-9c47-6839a3013b66}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>setup.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|PythonCore|3.9</InterpreterId>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include=".git\config" />
+    <Content Include=".git\description" />
+    <Content Include=".git\FETCH_HEAD" />
+    <Content Include=".git\HEAD" />
+    <Content Include=".git\hooks\applypatch-msg.sample" />
+    <Content Include=".git\hooks\commit-msg.sample" />
+    <Content Include=".git\hooks\fsmonitor-watchman.sample" />
+    <Content Include=".git\hooks\post-update.sample" />
+    <Content Include=".git\hooks\pre-applypatch.sample" />
+    <Content Include=".git\hooks\pre-commit.sample" />
+    <Content Include=".git\hooks\pre-merge-commit.sample" />
+    <Content Include=".git\hooks\pre-push.sample" />
+    <Content Include=".git\hooks\pre-rebase.sample" />
+    <Content Include=".git\hooks\pre-receive.sample" />
+    <Content Include=".git\hooks\prepare-commit-msg.sample" />
+    <Content Include=".git\hooks\push-to-checkout.sample" />
+    <Content Include=".git\hooks\update.sample" />
+    <Content Include=".git\index" />
+    <Content Include=".git\info\exclude" />
+    <Content Include=".git\logs\HEAD" />
+    <Content Include=".git\logs\refs\heads\master" />
+    <Content Include=".git\logs\refs\remotes\origin\HEAD" />
+    <Content Include=".git\logs\refs\remotes\upstream\feat\skip-umap" />
+    <Content Include=".git\logs\refs\remotes\upstream\master" />
+    <Content Include=".git\objects\pack\pack-3b63f0bebe9272634fccd1d3b1ccb44a3703de3b.idx" />
+    <Content Include=".git\objects\pack\pack-3b63f0bebe9272634fccd1d3b1ccb44a3703de3b.pack" />
+    <Content Include=".git\packed-refs" />
+    <Content Include=".git\refs\heads\master" />
+    <Content Include=".git\refs\remotes\origin\HEAD" />
+    <Content Include=".git\refs\remotes\upstream\feat\skip-umap" />
+    <Content Include=".git\refs\remotes\upstream\master" />
+    <Content Include=".vs\HistoQC\v16\.suo" />
+    <Content Include=".vs\slnx.sqlite" />
+    <Content Include=".vs\VSWorkspaceState.json" />
+    <Content Include="AnnotationModule\config_example_GeoJSON.ini" />
+    <Content Include="AnnotationModule\config_example_XML.ini" />
+    <Content Include="AnnotationModule\geojson_example.json" />
+    <Content Include="AnnotationModule\TCGA-EJ-5518-01Z-00-DX1.xml" />
+    <Content Include="CHANGELOG.md" />
+    <Content Include="CodeOfConduct.md" />
+    <Content Include="ContributingGuidelines.md" />
+    <Content Include="Dockerfile" />
+    <Content Include="environment.devenv.yml" />
+    <Content Include="HistoQC.pyproj" />
+    <Content Include="histoqc\config\config.ini" />
+    <Content Include="histoqc\config\config_clinical.ini" />
+    <Content Include="histoqc\config\config_first.ini" />
+    <Content Include="histoqc\config\config_ihc.ini" />
+    <Content Include="histoqc\config\config_light.ini" />
+    <Content Include="histoqc\config\config_v2.1.ini" />
+    <Content Include="histoqc\data\models\coverslip_edge_he\coverslip_edge.png" />
+    <Content Include="histoqc\data\models\coverslip_edge_he\coverslip_edge_mask.png" />
+    <Content Include="histoqc\data\models\coverslip_edge_ihc\coverslip_edge.png" />
+    <Content Include="histoqc\data\models\coverslip_edge_ihc\coverslip_edge_mask.png" />
+    <Content Include="histoqc\data\models\pen_markings_he\he.tsv" />
+    <Content Include="histoqc\data\models\pen_markings_he\pen_green.png" />
+    <Content Include="histoqc\data\models\pen_markings_he\pen_green_mask.png" />
+    <Content Include="histoqc\data\models\pen_markings_he\pen_red.png" />
+    <Content Include="histoqc\data\models\pen_markings_he\pen_red_mask.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_black.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_black_mask.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_green.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_green_mask.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_red.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_red_mask.png" />
+    <Content Include="histoqc\data\pen\1k_version\pen_red_mask_back.png" />
+    <Content Include="histoqc\data\pen\1k_version\red_mask.png" />
+    <Content Include="histoqc\data\templates\template1.png" />
+    <Content Include="histoqc\data\templates\template2.png" />
+    <Content Include="histoqc\data\templates\template3.png" />
+    <Content Include="histoqc\data\templates\template4.png" />
+    <Content Include="histoqc\ui\UserInterface\css\index.css" />
+    <Content Include="histoqc\ui\UserInterface\Data\.gitignore" />
+    <Content Include="histoqc\ui\UserInterface\index.html" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\css\bootstrap-grid.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\css\bootstrap-reboot.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\css\bootstrap-select.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\css\bootstrap.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\css\bootstrap.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\js\bootstrap-select.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\js\bootstrap.bundle.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\js\bootstrap.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\bootstrap\js\popper.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-3.5.17\d3.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-3.5.17\LICENSE" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-lasso\lasso.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-tip-master\.editorconfig" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-tip-master\.eslintrc.yaml" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-tip-master\.gitignore" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-tip-master\index.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\d3-tip-master\LICENSE" />
+    <Content Include="histoqc\ui\UserInterface\libs\DataTables\dataTables.bootstrap4.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\DataTables\dataTables.bootstrap4.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\DataTables\dataTables.cellEdit.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\DataTables\datatables.min.css" />
+    <Content Include="histoqc\ui\UserInterface\libs\DataTables\datatables.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\font-awesome\fontawesome-all.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\jquery-1.12.4\jquery.min.js" />
+    <Content Include="histoqc\ui\UserInterface\libs\umap-js\umap-js.min.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\bar_chart.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\chart_init.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\data_load.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\global_config.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\global_vars.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\image_init.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\index.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\multi_select_mode.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\parallel_chart.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\scatter_chart.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\select_mode.js" />
+    <Content Include="histoqc\ui\UserInterface\scripts\table_init.js" />
+    <Content Include="libopenslide-0.dll" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="MANIFEST.in" />
+    <Content Include="pyproject.toml" />
+    <Content Include="Readme.md" />
+    <Content Include="requirements.txt" />
+    <Content Include="setup.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="histoqc\AnnotationModule.py" />
+    <Compile Include="histoqc\BaseImage.py" />
+    <Compile Include="histoqc\BasicModule.py" />
+    <Compile Include="histoqc\BlurDetectionModule.py" />
+    <Compile Include="histoqc\BrightContrastModule.py" />
+    <Compile Include="histoqc\BubbleRegionByRegion.py" />
+    <Compile Include="histoqc\ClassificationModule.py" />
+    <Compile Include="histoqc\config\__init__.py" />
+    <Compile Include="histoqc\config\__main__.py" />
+    <Compile Include="histoqc\data\__init__.py" />
+    <Compile Include="histoqc\data\__main__.py" />
+    <Compile Include="histoqc\DeconvolutionModule.py" />
+    <Compile Include="histoqc\HistogramModule.py" />
+    <Compile Include="histoqc\LightDarkModule.py" />
+    <Compile Include="histoqc\LocalTextureEstimationModule.py" />
+    <Compile Include="histoqc\MorphologyModule.py" />
+    <Compile Include="histoqc\SaveModule.py" />
+    <Compile Include="histoqc\tests\conftest.py" />
+    <Compile Include="histoqc\tests\test_config_cli.py" />
+    <Compile Include="histoqc\tests\test_data_cli.py" />
+    <Compile Include="histoqc\tests\test_pipeline_cli.py" />
+    <Compile Include="histoqc\tests\test_ui_cli.py" />
+    <Compile Include="histoqc\ui\__init__.py" />
+    <Compile Include="histoqc\ui\__main__.py" />
+    <Compile Include="histoqc\_pipeline.py" />
+    <Compile Include="histoqc\_worker.py" />
+    <Compile Include="histoqc\__init__.py" />
+    <Compile Include="histoqc\__main__.py" />
+    <Compile Include="setup.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".git" />
+    <Folder Include=".git\hooks" />
+    <Folder Include=".git\info" />
+    <Folder Include=".git\logs" />
+    <Folder Include=".git\logs\refs\" />
+    <Folder Include=".git\logs\refs\heads" />
+    <Folder Include=".git\logs\refs\remotes\" />
+    <Folder Include=".git\logs\refs\remotes\origin" />
+    <Folder Include=".git\logs\refs\remotes\upstream" />
+    <Folder Include=".git\logs\refs\remotes\upstream\feat" />
+    <Folder Include=".git\objects\" />
+    <Folder Include=".git\objects\pack" />
+    <Folder Include=".git\refs\" />
+    <Folder Include=".git\refs\heads" />
+    <Folder Include=".git\refs\remotes\" />
+    <Folder Include=".git\refs\remotes\origin" />
+    <Folder Include=".git\refs\remotes\upstream" />
+    <Folder Include=".git\refs\remotes\upstream\feat" />
+    <Folder Include=".vs" />
+    <Folder Include=".vs\HistoQC\" />
+    <Folder Include=".vs\HistoQC\v16" />
+    <Folder Include="AnnotationModule" />
+    <Folder Include="histoqc" />
+    <Folder Include="histoqc\config" />
+    <Folder Include="histoqc\data" />
+    <Folder Include="histoqc\data\models\" />
+    <Folder Include="histoqc\data\models\coverslip_edge_he" />
+    <Folder Include="histoqc\data\models\coverslip_edge_ihc" />
+    <Folder Include="histoqc\data\models\pen_markings_he" />
+    <Folder Include="histoqc\data\pen\" />
+    <Folder Include="histoqc\data\pen\1k_version" />
+    <Folder Include="histoqc\data\templates" />
+    <Folder Include="histoqc\tests" />
+    <Folder Include="histoqc\ui" />
+    <Folder Include="histoqc\ui\UserInterface" />
+    <Folder Include="histoqc\ui\UserInterface\css" />
+    <Folder Include="histoqc\ui\UserInterface\Data" />
+    <Folder Include="histoqc\ui\UserInterface\libs\" />
+    <Folder Include="histoqc\ui\UserInterface\libs\bootstrap\" />
+    <Folder Include="histoqc\ui\UserInterface\libs\bootstrap\css" />
+    <Folder Include="histoqc\ui\UserInterface\libs\bootstrap\js" />
+    <Folder Include="histoqc\ui\UserInterface\libs\d3-3.5.17" />
+    <Folder Include="histoqc\ui\UserInterface\libs\d3-lasso" />
+    <Folder Include="histoqc\ui\UserInterface\libs\d3-tip-master" />
+    <Folder Include="histoqc\ui\UserInterface\libs\DataTables" />
+    <Folder Include="histoqc\ui\UserInterface\libs\font-awesome" />
+    <Folder Include="histoqc\ui\UserInterface\libs\jquery-1.12.4" />
+    <Folder Include="histoqc\ui\UserInterface\libs\umap-js" />
+    <Folder Include="histoqc\ui\UserInterface\scripts" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.9" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

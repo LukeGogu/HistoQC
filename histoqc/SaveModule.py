@@ -18,6 +18,8 @@ def blend2Images(img, mask):
     out = np.concatenate((mask, img, mask), 2)
     return out
 
+def maskImage(img, mask):
+    return img*np.dstack([mask, mask, mask])
 
 def saveFinalMask(s, params):
     logging.info(f"{s['filename']} - \tsaveUsableRegion")
@@ -32,6 +34,11 @@ def saveFinalMask(s, params):
         img = s.getImgThumb(s["image_work_size"])
         out = blend2Images(img, mask)
         io.imsave(s["outdir"] + os.sep + s["filename"] + "_fuse.png", img_as_ubyte(out))
+
+    if strtobool(params.get("mask_thumb", "True")):
+        img = s.getImgThumb(s["image_work_size"])
+        out = maskImage(img, mask)
+        io.imsave(s["outdir"] + os.sep + s["filename"] + "_mask_applied.png", img_as_ubyte(out))
 
     return
 
