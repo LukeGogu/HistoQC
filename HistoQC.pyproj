@@ -6,7 +6,7 @@
     <ProjectGuid>{b8df4f28-127a-4ac6-9c47-6839a3013b66}</ProjectGuid>
     <ProjectHome />
     <StartupFile>setup.py</StartupFile>
-    <SearchPath />
+    <SearchPath>wsi</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
@@ -140,6 +140,10 @@
     <Content Include="Readme.md" />
     <Content Include="requirements.txt" />
     <Content Include="setup.cfg" />
+    <Content Include="wsi\__pycache__\filter.cpython-39.pyc" />
+    <Content Include="wsi\__pycache__\slide.cpython-39.pyc" />
+    <Content Include="wsi\__pycache__\tiles.cpython-39.pyc" />
+    <Content Include="wsi\__pycache__\util.cpython-39.pyc" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="histoqc\AnnotationModule.py" />
@@ -157,6 +161,9 @@
     <Compile Include="histoqc\HistogramModule.py" />
     <Compile Include="histoqc\LightDarkModule.py" />
     <Compile Include="histoqc\LocalTextureEstimationModule.py" />
+    <Compile Include="histoqc\PatchExtractionModule.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="histoqc\MorphologyModule.py" />
     <Compile Include="histoqc\SaveModule.py" />
     <Compile Include="histoqc\tests\conftest.py" />
@@ -171,6 +178,13 @@
     <Compile Include="histoqc\__init__.py" />
     <Compile Include="histoqc\__main__.py" />
     <Compile Include="setup.py" />
+    <Compile Include="wsi\filter.py" />
+    <Compile Include="wsi\new_tiles.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wsi\slide.py" />
+    <Compile Include="wsi\tiles.py" />
+    <Compile Include="wsi\util.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include=".git" />
@@ -222,6 +236,8 @@
     <Folder Include="histoqc\ui\UserInterface\libs\jquery-1.12.4" />
     <Folder Include="histoqc\ui\UserInterface\libs\umap-js" />
     <Folder Include="histoqc\ui\UserInterface\scripts" />
+    <Folder Include="wsi\" />
+    <Folder Include="wsi\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.9" />
