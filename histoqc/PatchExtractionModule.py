@@ -9,6 +9,8 @@ from skimage.color import rgb2gray, rgb2hsv
 from skimage.filters import rank
 import numpy as np
 
+from enum import Enum
+
 def generateScaledMaskedImage(s, params):
     
     img = s.getImgThumb(params.get("image_work_size", "1.25x"))
@@ -22,43 +24,50 @@ def maskedImage(img, mask):
     masked_img = img*np.dstack([mask, mask, mask])
     return masked_img
 
-def extractTissueTiles(s, params):
+
+
+
+def extractTiles(slide, params):
+
+    logging.info(f"{slide['filename']} - \textractTissueTiles")
     
-    logging.info(f"{s['filename']} - \textractTissueTiles")
+    global ROW_TILE_SIZE
+    global COL_TILE_SIZE
+    global ROW_OVERLAP
+    global COL_OVERLAP
+    global TISSUE_HIGH_THRESH
+    global TISSUE_LOW_THRESH
+    global HSV_PURPLE
+    global HSV_PINK
+    global NUM_TOP_TILES
+    global MAX_TILE_NUM
+    global TILE_SAVE_LEVEL
+    global s
+
+    ROW_TILE_SIZE = int(params.get("row_size", 128))
+    COL_TILE_SIZE = int(params.get("col_size", ROW_TILE_SIZE))
+    ROW_TILE_SIZE= int(params.get("patchsize", ROW_TILE_SIZE))
+    COL_TILE_SIZE = int(params.get("patchsize", COL_TILE_SIZE))
     
-    patch_size = int(params.get("path_size", "128"))
-    tissue_low_thresh = int(params.get("tissue_low_thresh", "10"))
-    tissue_high_thresh = int(params.get("tissue_high_thresh", "80"))
-    max_num_tiles = int(params.get("max_num_tiles", "None"))
+    ROW_OVERLAP = int(params.get("row_overlap", 0))
+    COL_OVERLAP = int(params.get("col_overlap", ROW_OVERLAP))
+    ROW_OVERLAP = int(params.get("overlap", ROW_OVERLAP))
+    COL_OVERLAP = int(params.get("overlap", COL_OVERLAP))
 
-    img = s.getImgThumb(params.get("image_work_size", "2.5x"))
-    scaled_use_mask = skimage.transform.resize(s["img_mask_use"], img[:, :, 1].shape, order=0) > 0
-    masked_img = img*np.dstack([mask, mask, mask])
+    TISSUE_HIGH_THRESH = int(params.get("tissue_high_thresh", 80))
+    TISSUE_LOW_THRESH = int(params.get("tissue_low_thresh", 10))
+
+    HSV_PURPLE = int(params.get("hsv_purple", 270))
+    HSV_PINK = int(params.get("hsv_pink", 330))
+
+    MAX_TILE_NUM = int(params.get("max_tile_num", 1000))            #-1 means all
+    NUM_TOP_TILES = int(params.get("num_top_tiles", min(50, MAX_TILE_NUM)))
+
+    TILE_SAVE_LEVEL = params.get("image_work_size", "10.0x")
     
-def extractTopTiles(s, params):
-    logging.info(f"{s['filename']} - \textractTopTiles")
-    patch_size = int(params.get("path_size", "128"))
-    img = s.getImgThumb(params.get("image_work_size", "2.5x"))
-    tissue_high_thresh = int(params.get("tissue_high_thresh", "80"))
-    tissue_low_thresh = int(params.get("tissue_low_thresh", "10"))
-    num_top_tiles = int(params.get("num_top_tiles", "None"))
+    s = slide
 
-
-
-
-
-
-
-TISSUE_HIGH_THRESH = 80
-TISSUE_LOW_THRESH = 10
-
-ROW_TILE_SIZE = 1024
-COL_TILE_SIZE = 1024
-ROW_OVERLAP = 0
-COL_OVERLAP = 0
-
-NUM_TOP_TILES = 50
-MAX_TILE_NUM = 1000 # -1 means all
+    summary_and_tiles(display=False, save_summary=False, save_data=False, save_top_tiles=True, save_tiles_with_tissue=False)
 
 
 def get_num_tiles(h, w):
@@ -76,8 +85,8 @@ def get_num_tiles(h, w):
     Tuple consisting of the number of vertical tiles and the number of horizontal tiles that the image can be divided
     into given the row tile size and the column tile size.
   """
-  num_row_tiles = math.ceil((rows - ROW_OVERLAP)/ (ROW_TILE_SIZE - ROW_OVERLAP))
-  num_col_tiles = math.ceil((cols - COL_OVERLAP)/ (COL_TILE_SIZE - ROW_OVERLAP))
+  num_row_tiles = math.ceil((h - ROW_OVERLAP)/ (ROW_TILE_SIZE - ROW_OVERLAP))
+  num_col_tiles = math.ceil((w - COL_OVERLAP)/ (COL_TILE_SIZE - ROW_OVERLAP))
   return num_row_tiles, num_col_tiles
 
 
@@ -148,10 +157,10 @@ def save_tile_as_png(tile, save=True):
     display: If True, dispaly tile image.
   """
   t = tile
-  np_tile = s.getImgThumb(params.get("image_work_size", "2.5x"))[t.o_r_s:t.o_r_e, t.o_c_s:t.o_c_e]
+  np_tile = s.getImgThumb(TILE_SAVE_LEVEL)[t.o_r_s:t.o_r_e, t.o_c_s:t.o_c_e]
 
   if save:
-    img_path = s["outdir"] + os.sep + s["filename"] + os.sep + "tiles" + os.sep + "tile-r%d-c%d-x%d-y%d-w%d-h%d" % (
+    img_path = s["outdir"] + os.sep + "tiles" + os.sep + "tile-r%d-c%d-x%d-y%d-w%d-h%d" % (
                              t.r, t.c, t.o_c_s, t.o_r_s, t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s) + ".png"
     dir = os.path.dirname(img_path)
     if not os.path.exists(dir):
@@ -173,7 +182,7 @@ def score_tiles(masked_img, small_tile_in_tile=False):
   Returns:
     TileSummary object which includes a list of Tile objects containing information about each tile.
   """
-  tile_extr_img = s.getImgThumb(params.get("image_work_size", "2.5x"))
+  tile_extr_img = s.getImgThumb(TILE_SAVE_LEVEL)
   (h, w, _) = tile_extr_img.shape
   scale_factor = max(masked_img.shape)/max(tile_extr_img.shape)
 
@@ -192,7 +201,7 @@ def score_tiles(masked_img, small_tile_in_tile=False):
   none = 0
 
   tile_indices = get_tile_indices(h, w)
-  scaled_tile_indices = tuple(np.round(np.array(tile_indices) * scale_factor))
+  scaled_tile_indices = tuple(np.rint(np.array(tile_indices) * scale_factor).astype(int))
   for st, t in zip(scaled_tile_indices, tile_indices):
     count += 1  # tile_num
     r_s, r_e, c_s, c_e, r, c = st
@@ -209,7 +218,7 @@ def score_tiles(masked_img, small_tile_in_tile=False):
       none += 1
     o_r_s, o_r_e, o_c_s, o_c_e, _, _ = t
 
-    score, color_factor, s_and_v_factor, quantity_factor = score_tile(np_tile, t_p, slide_num, r, c)
+    score, color_factor, s_and_v_factor, quantity_factor = score_tile(np_tile, t_p, r, c)
 
     np_scaled_tile = np_tile if small_tile_in_tile else None
     tile = Tile(tile_sum, s["filename"], np_scaled_tile, count, r, c, r_s, r_e, c_s, c_e, o_r_s, o_r_e, o_c_s,
@@ -409,7 +418,7 @@ class Tile:
     return util.np_to_pil(self.np_scaled_tile)
 
 
-def score_tile(np_tile, tissue_percent, slide_num, row, col):
+def score_tile(np_tile, tissue_percent, row, col):
   """
   Score tile based on tissue percentage, color factor, saturation/value factor, and tissue quantity factor.
 
@@ -458,6 +467,33 @@ def hsv_purple_pink_factor(rgb):
   factor = pi_dev / pu_dev * avg_factor
   return factor
 
+def hsv_purple_deviation(hsv_hues):
+  """
+  Obtain the deviation from the HSV hue for purple.
+
+  Args:
+    hsv_hues: NumPy array of HSV hue values.
+
+  Returns:
+    The HSV purple deviation.
+  """
+  purple_deviation = np.sqrt(np.mean(np.abs(hsv_hues - HSV_PURPLE) ** 2))
+  return purple_deviation
+
+
+def hsv_pink_deviation(hsv_hues):
+  """
+  Obtain the deviation from the HSV hue for pink.
+
+  Args:
+    hsv_hues: NumPy array of HSV hue values.
+
+  Returns:
+    The HSV pink deviation.
+  """
+  pink_deviation = np.sqrt(np.mean(np.abs(hsv_hues - HSV_PINK) ** 2))
+  return pink_deviation
+
 def hsv_saturation_and_value_factor(rgb):
   """
   Function to reduce scores of tiles with narrow HSV saturations and values since saturation and value standard
@@ -473,7 +509,7 @@ def hsv_saturation_and_value_factor(rgb):
     Saturation and value factor, where 1 is no effect and less than 1 means the standard deviations of saturation and
     value are relatively small.
   """
-  hsv = filter_rgb_to_hsv(rgb, display_np_info=False)
+  hsv = rgb2hsv(rgb)
   s = filter_hsv_to_s(hsv)
   v = filter_hsv_to_v(hsv)
   s_std = np.std(s)
@@ -620,3 +656,9 @@ def tissue_quantity(tissue_percentage):
     return TissueQuantity.LOW
   else:
     return TissueQuantity.NONE
+
+class TissueQuantity(Enum):
+  NONE = 0
+  LOW = 1
+  MEDIUM = 2
+  HIGH = 3
