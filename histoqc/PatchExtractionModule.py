@@ -69,10 +69,11 @@ def extractTiles(slide, params):
 
     save_tiles_with_tissue = strtobool(params.get("tissue_tiles", "False"))
     save_top_tiles = strtobool(params.get("top_tiles", str(not save_tiles_with_tissue)))
+    save_csv = strtobool(params.get("save_csv", "False"))
     
     s = slide
 
-    summary_and_tiles(display=False, save_summary=True, save_data=False, save_top_tiles=save_top_tiles, save_tiles_with_tissue=save_tiles_with_tissue)
+    summary_and_tiles(display=False, save_summary=True, save_data=save_csv, save_top_tiles=save_top_tiles, save_tiles_with_tissue=save_tiles_with_tissue)
 
 
 
@@ -120,8 +121,8 @@ def get_num_tiles(h, w):
     Tuple consisting of the number of vertical tiles and the number of horizontal tiles that the image can be divided
     into given the row tile size and the column tile size.
   """
-  num_row_tiles = math.ceil((h - ROW_OVERLAP)/ (ROW_TILE_SIZE - ROW_OVERLAP))
-  num_col_tiles = math.ceil((w - COL_OVERLAP)/ (COL_TILE_SIZE - ROW_OVERLAP))
+  num_row_tiles = math.floor((h - ROW_OVERLAP)/ (ROW_TILE_SIZE - ROW_OVERLAP))
+  num_col_tiles = math.floor((w - COL_OVERLAP)/ (COL_TILE_SIZE - ROW_OVERLAP))
   return num_row_tiles, num_col_tiles
 
 
@@ -143,10 +144,10 @@ def get_tile_indices(h, w):
   num_row_tiles, num_col_tiles = get_num_tiles(h, w)
   for r in range(0, num_row_tiles):
     start_r = r * (ROW_TILE_SIZE - ROW_OVERLAP)
-    end_r = start_r + ROW_TILE_SIZE if (r < num_row_tiles - 1) else h
+    end_r = start_r + ROW_TILE_SIZE #if (r < num_row_tiles - 1) else h
     for c in range(0, num_col_tiles):
       start_c = c * (COL_TILE_SIZE - COL_OVERLAP)
-      end_c = start_c + COL_TILE_SIZE if (c < num_col_tiles - 1) else w
+      end_c = start_c + COL_TILE_SIZE #if (c < num_col_tiles - 1) else w
       indices.append((start_r, end_r, start_c, end_c, r + 1, c + 1))
   return indices
 
@@ -169,10 +170,14 @@ def summary_and_tiles(display=True, save_summary=False, save_data=True, save_top
   np_img = maskedImage(img, mask)
 
   tile_sum = score_tiles(np_img)
-  #if save_data:
-  #  save_tile_data(tile_sum)
+  dir=os.path.join(s["outdir"], "tiles")
+  if not os.path.exists(dir):
+      os.makedirs(dir)
+  if save_data:
+    save_tile_data(tile_sum)
   generate_tile_summaries(tile_sum, np_img, display=display, save_summary=save_summary)
   generate_top_tile_summaries(tile_sum, np_img, display=display, save_summary=save_summary)
+  generate_tissue_tile_summaries(tile_sum, np_img, display=display, save_summary=save_summary)
   if save_top_tiles:
     for tile in tile_sum.top_tiles():
       tile.save_tile("top_tiles")
@@ -855,6 +860,81 @@ def generate_top_tile_summaries(tile_sum, np_img, display=True, save_summary=Fal
     summary.save(s["outdir"] + os.sep + "tiles" + os.sep + s["filename"] + "_top_tiles_masked.png")#save_top_tiles_image(summary, slide_num)
     summary_orig.save(s["outdir"] + os.sep + "tiles" + os.sep + s["filename"] + "_top_tiles_orig.png")#save_top_tiles_on_original_image(summary_orig, slide_num)
     
+def generate_tissue_tile_summaries(tile_sum, np_img, display=True, save_summary=False, show_top_stats=False,
+                                label_all_tiles=LABEL_ALL_TILES_IN_TOP_TILE_SUMMARY,
+                                border_all_tiles=BORDER_ALL_TILES_IN_TOP_TILE_SUMMARY):
+  """
+  Generate summary images/thumbnails showing the top tiles ranked by score.
+
+  Args:
+    tile_sum: TileSummary object.
+    np_img: Image as a NumPy array.
+    display: If True, display top tiles to screen.
+    save_summary: If True, save top tiles images.
+    show_top_stats: If True, append top tile score stats to image.
+    label_all_tiles: If True, label all tiles. If False, label only top tiles.
+  """
+  z = 300  # height of area at top of summary slide
+  slide_name = tile_sum.slide_name
+  rows = tile_sum.orig_h
+  cols = tile_sum.orig_w
+  row_tile_size = tile_sum.scaled_tile_h
+  col_tile_size = tile_sum.scaled_tile_w
+  num_row_tiles, num_col_tiles = get_num_tiles(rows, cols)
+  summary = create_summary_pil_img(np_img, z, row_tile_size, col_tile_size, num_row_tiles, num_col_tiles)
+  draw = ImageDraw.Draw(summary)
+
+  np_orig = s.getImgThumb(s["image_work_size"])
+  summary_orig = create_summary_pil_img(np_orig, z, row_tile_size, col_tile_size, num_row_tiles, num_col_tiles)
+  draw_orig = ImageDraw.Draw(summary_orig)
+
+  if border_all_tiles:
+    for t in tile_sum.tiles:
+      border_color = faded_tile_border_color(t.tissue_percentage)
+      tile_border(draw, t.r_s + z, t.r_e + z, t.c_s, t.c_e, border_color, border_size=1)
+      tile_border(draw_orig, t.r_s + z, t.r_e + z, t.c_s, t.c_e, border_color, border_size=1)
+
+  tbs = TILE_BORDER_SIZE
+  top_tiles = tile_sum.top_tiles_tissue_thresh()
+  for t in top_tiles:
+    border_color = tile_border_color(t.tissue_percentage)
+    tile_border(draw, t.r_s + z, t.r_e + z, t.c_s, t.c_e, border_color)
+    tile_border(draw_orig, t.r_s + z, t.r_e + z, t.c_s, t.c_e, border_color)
+    if border_all_tiles:
+      tile_border(draw, t.r_s + z + tbs, t.r_e + z - tbs, t.c_s + tbs, t.c_e - tbs, (0, 0, 0))
+      tile_border(draw_orig, t.r_s + z + tbs, t.r_e + z - tbs, t.c_s + tbs, t.c_e - tbs, (0, 0, 0))
+
+  summary_txt = "%s Tissue Tile Summary:" % tile_sum.slide_name + "\n" + summary_stats(tile_sum)
+
+  summary_font = ImageFont.truetype(SUMMARY_TITLE_FONT_PATH, size=SUMMARY_TITLE_TEXT_SIZE)
+  draw.text((5, 5), summary_txt, SUMMARY_TITLE_TEXT_COLOR, font=summary_font)
+  draw_orig.text((5, 5), summary_txt, SUMMARY_TITLE_TEXT_COLOR, font=summary_font)
+
+  tiles_to_label = tile_sum.tiles if label_all_tiles else top_tiles
+  h_offset = TILE_BORDER_SIZE + 2
+  v_offset = TILE_BORDER_SIZE
+  h_ds_offset = TILE_BORDER_SIZE + 3
+  v_ds_offset = TILE_BORDER_SIZE + 1
+  for t in tiles_to_label:
+    label = "R%d\nC%d" % (t.r, t.c)
+    font = ImageFont.truetype(FONT_PATH, size=TILE_LABEL_TEXT_SIZE)
+    # drop shadow behind text
+    draw.text(((t.c_s + h_ds_offset), (t.r_s + v_ds_offset + z)), label, (0, 0, 0), font=font)
+    draw_orig.text(((t.c_s + h_ds_offset), (t.r_s + v_ds_offset + z)), label, (0, 0, 0), font=font)
+
+    draw.text(((t.c_s + h_offset), (t.r_s + v_offset + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
+    draw_orig.text(((t.c_s + h_offset), (t.r_s + v_offset + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
+
+  if show_top_stats:
+    summary = add_tile_stats_to_top_tile_summary(summary, top_tiles, z)
+    summary_orig = add_tile_stats_to_top_tile_summary(summary_orig, top_tiles, z)
+
+  if display:
+    summary.show()
+    summary_orig.show()
+  if save_summary:
+    summary.save(s["outdir"] + os.sep + "tiles" + os.sep + s["filename"] + "_tissue_tiles_masked.png")#save_top_tiles_image(summary, slide_num)
+    summary_orig.save(s["outdir"] + os.sep + "tiles" + os.sep + s["filename"] + "_tissue_tiles_orig.png")#save_top_tiles_on_original_image(summary_orig, slide_num)
 
 def create_summary_pil_img(np_img, title_area_height, row_tile_size, col_tile_size, num_row_tiles, num_col_tiles):
   """
@@ -872,8 +952,8 @@ def create_summary_pil_img(np_img, title_area_height, row_tile_size, col_tile_si
     Summary image as a PIL image. This image contains the image data specified by the np_img input and also has
     potentially a top title area and right side and bottom padding.
   """
-  r = row_tile_size * num_row_tiles + title_area_height
-  c = col_tile_size * num_col_tiles
+  r = np_img.shape[0] + title_area_height
+  c = np_img.shape[1]
   summary_img = np.zeros([r, c, np_img.shape[2]], dtype=np.uint8)
   # add gray edges so that tile text does not get cut off
   summary_img.fill(120)
@@ -1044,3 +1124,36 @@ def pil_text(text, w_border=TILE_TEXT_W_BORDER, h_border=TILE_TEXT_H_BORDER, fon
   draw = ImageDraw.Draw(image)
   draw.text((w_border, h_border), text, text_color, font=font)
   return image
+
+def save_tile_data(tile_summary):
+  """
+  Save tile data to csv file.
+
+  Args
+    tile_summary: TimeSummary object.
+  """
+
+  #time = Time()
+
+  sep=";"
+
+  csv = "%s Tile Summary:" % tile_summary.slide_name + "\n" + summary_stats(tile_summary)
+
+  csv += "\n\n\nTile Num" + sep + "Row" + sep + "Column" + sep + "Tissue %" + sep + "Tissue Quantity" + sep + "Col Start" + sep + "Row Start" + sep + "Col End" + sep + "Row End" + sep + "Col Size" + sep + "Row Size" + sep + "" + \
+         "Original Col Start" + sep + "Original Row Start" + sep + "Original Col End" + sep + "Original Row End" + sep + "Original Col Size" + sep + "Original Row Size" + sep + "" + \
+         "Color Factor" + sep + "S and V Factor" + sep + "Quantity Factor" + sep + "Score\n"
+
+  for t in tile_summary.tiles:
+    line = "%s" + sep + "%d" + sep + "%d" + sep + "%4.2f" + sep + "%s" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%d" + sep + "%4.0f" + sep + "%4.2f" + sep + "%4.2f" + sep + "%0.4f\n"
+    line = line % (
+      t.tile_num, t.r, t.c, t.tissue_percentage, t.tissue_quantity().name, t.c_s, t.r_s, t.c_e, t.r_e, t.c_e - t.c_s,
+      t.r_e - t.r_s, t.o_c_s, t.o_r_s, t.o_c_e, t.o_r_e, t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s, t.color_factor,
+      t.s_and_v_factor, t.quantity_factor, t.score)
+    csv += line
+
+  data_path = s["outdir"] + os.sep + "tiles" + os.sep + s["filename"] + "_tile_data.csv"
+  csv_file = open(data_path, "w")
+  csv_file.write(csv)
+  csv_file.close()
+
+  #print("%-20s | Time: %-14s  Name: %s" % ("Save Tile Data", str(time.elapsed()), data_path))
