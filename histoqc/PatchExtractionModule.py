@@ -79,8 +79,8 @@ def extractTiles(slide, params):
 
 DISPLAY_TILE_SUMMARY_LABELS = False
 TILE_LABEL_TEXT_SIZE = 10
-LABEL_ALL_TILES_IN_TOP_TILE_SUMMARY = False
-BORDER_ALL_TILES_IN_TOP_TILE_SUMMARY = False
+LABEL_ALL_TILES_IN_TOP_TILE_SUMMARY = True
+BORDER_ALL_TILES_IN_TOP_TILE_SUMMARY = True
 
 TILE_BORDER_SIZE = 2  # The size of the colored rectangular border around summary tiles.
 
@@ -1157,3 +1157,23 @@ def save_tile_data(tile_summary):
   csv_file.close()
 
   #print("%-20s | Time: %-14s  Name: %s" % ("Save Tile Data", str(time.elapsed()), data_path))
+
+def faded_tile_border_color(tissue_percentage):
+  """
+  Obtain the corresponding faded tile border color for a particular tile tissue percentage.
+
+  Args:
+    tissue_percentage: The tile tissue percentage
+
+  Returns:
+    The faded tile border color corresponding to the tile tissue percentage.
+  """
+  if tissue_percentage >= TISSUE_HIGH_THRESH:
+    border_color = FADED_THRESH_COLOR
+  elif (tissue_percentage >= TISSUE_LOW_THRESH) and (tissue_percentage < TISSUE_HIGH_THRESH):
+    border_color = FADED_MEDIUM_COLOR
+  elif (tissue_percentage > 0) and (tissue_percentage < TISSUE_LOW_THRESH):
+    border_color = FADED_LOW_COLOR
+  else:
+    border_color = FADED_NONE_COLOR
+  return border_color
