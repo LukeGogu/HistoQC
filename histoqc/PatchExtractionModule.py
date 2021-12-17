@@ -771,11 +771,11 @@ def generate_tile_summaries(tile_sum, np_img, display=True, save_summary=False):
       label = "R%d\nC%d" % (t.r, t.c)
       font = ImageFont.truetype(FONT_PATH, size=TILE_LABEL_TEXT_SIZE)
       # drop shadow behind text
-      draw.text(((t.c_s + 3), (t.r_s + 3 + z)), label, (0, 0, 0), font=font)
-      draw_orig.text(((t.c_s + 3), (t.r_s + 3 + z)), label, (0, 0, 0), font=font)
+      draw.text(((t.c_s + 3 + COL_OVERLAP), (t.r_s + 3 + ROW_OVERLAP + z)), label, (0, 0, 0), font=font)
+      draw_orig.text(((t.c_s + COL_OVERLAP + 3), (t.r_s + 3 + ROW_OVERLAP + z)), label, (0, 0, 0), font=font)
 
-      draw.text(((t.c_s + 2), (t.r_s + 2 + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
-      draw_orig.text(((t.c_s + 2), (t.r_s + 2 + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
+      draw.text(((t.c_s + 2 + COL_OVERLAP), (t.r_s + 2 + ROW_OVERLAP + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
+      draw_orig.text(((t.c_s + 2 + COL_OVERLAP), (t.r_s + 2 + ROW_OVERLAP + z)), label, SUMMARY_TILE_TEXT_COLOR, font=font)
 
   if display:
     summary.show()
@@ -835,10 +835,10 @@ def generate_top_tile_summaries(tile_sum, np_img, display=True, save_summary=Fal
   draw_orig.text((5, 5), summary_txt, SUMMARY_TITLE_TEXT_COLOR, font=summary_font)
 
   tiles_to_label = tile_sum.tiles if label_all_tiles else top_tiles
-  h_offset = TILE_BORDER_SIZE + 2
-  v_offset = TILE_BORDER_SIZE
-  h_ds_offset = TILE_BORDER_SIZE + 3
-  v_ds_offset = TILE_BORDER_SIZE + 1
+  h_offset = TILE_BORDER_SIZE + 2 + COL_OVERLAP
+  v_offset = TILE_BORDER_SIZE + ROW_OVERLAP
+  h_ds_offset = TILE_BORDER_SIZE + 3 + COL_OVERLAP
+  v_ds_offset = TILE_BORDER_SIZE + 1 + ROW_OVERLAP
   for t in tiles_to_label:
     label = "R%d\nC%d" % (t.r, t.c)
     font = ImageFont.truetype(FONT_PATH, size=TILE_LABEL_TEXT_SIZE)
