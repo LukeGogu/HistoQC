@@ -3,8 +3,8 @@ import os
 
 import math
 from distutils.util import strtobool
-import skimage
 from histoqc.BaseImage import printMaskHelper
+import skimage
 from skimage import io, img_as_ubyte, morphology, measure
 from skimage.color import rgb2gray, rgb2hsv
 from skimage.filters import rank
